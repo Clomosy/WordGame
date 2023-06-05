@@ -36,7 +36,7 @@ var
     AnswStr := AnsiUpperCase(AnswStr);
     If AnswStr=MyWord Then
     begin
-      ShowMessage('Tebrikler🤗');
+      ShowMessage('Congratulations..🤗');
       chance := 0;
       control := false;
       ztStartBtn.Tag := 0;
@@ -50,11 +50,10 @@ var
     begin
       if wrongCount = 3 then
       begin
-        ShowMessage('Kelime: '+MyWord+' Başarısız oldun yeniden başlatıldı.🙁');
+        ShowMessage('Word : '+MyWord+' You failed game restarted.🙁');
         chance := 0;
         control := false;
         MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
-        //ztStartLbl.Text := ' ';
         ztStartBtn.Tag := 0;
         wrongCount := 1;
         GetNewWord;
@@ -66,7 +65,7 @@ var
       else
       begin
         wrongCount := wrongCount +1;
-        ShowMessage('Yanlış Tekrar Deneyin.🙁  Kalan Hakkın  '+IntToStr(wrongCount-1)+'/3');
+        ShowMessage('Incorrect Try Again🙁 Your Remaining Right '+IntToStr(wrongCount-1)+'/3');
         kelimeEdt.Text := '';
       end;
     end;
@@ -77,8 +76,7 @@ var
       0:
       begin
         MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/ok.png');
-        //ztStartLbl.Text := ' ';
-        ztStartBtn.Tag := 1; //buton içerisinde veri saklama işlemi yapılabilir. 
+        ztStartBtn.Tag := 1; 
         wrongCount := 1;
         GetNewWord;
         WordMemo.Text := WordMean;
@@ -142,7 +140,7 @@ var
             begin
               chance := chance +1;
               
-              // RASTGELE 2 DEĞERİ ALIYOR
+             
                 for i := 1 to 5 do
                 begin
                     firstIndex := clMath.GenerateRandom(1,5);
@@ -151,13 +149,13 @@ var
                       break;
                 end;
                 
-                // HARFLER ALINDI
+          
               firstLetter := Copy(MyWord,firstIndex,1); //L
               secondLetter := Copy(MyWord,secondIndex,1); //U
               LblDisplay.Visible := True;
               LblDisplay.Text := ''; //?
               
-              // HARFLER LABELA YAZILDI
+              
                   for i:= 1 to 5 do
                   begin
                       if i = firstIndex then
@@ -171,12 +169,12 @@ var
             end;
       end
       else
-        ShowMessage('Başka Hakkınız Kalmadı 😞');
+        ShowMessage('You Have No More Rights 😞');
       
     
       end
       else
-        ShowMessage('Oyunu Başlat! 😎');
+        ShowMessage('Start Game! 😎');
       
   
     end;
@@ -203,7 +201,7 @@ var
   
 procedure getTitle;
 begin
-  Lblword := MyForm.AddNewProLabel(MyForm,'Lblword','KELİME OYUNU');
+  Lblword := MyForm.AddNewProLabel(MyForm,'Lblword','World Game');
   clComponent.SetupComponent(Lblword,'{"Align" : "MostTop","MarginBottom":35,"Width" :210, "Height":26,"TextColor":"#F2F0F0","TextSize":20,"TextVerticalAlign":"top", "TextHorizontalAlign":"center","TextBold":"yes"}');
   
 end;
@@ -269,7 +267,7 @@ end;
 
 
 begin
-  ShowMessage('Kelime Oyununa hoşgeldin. Oyuna "START" butonuna basarak başlamalısın. Oyundaki bulacağın kelime 5 harfli. 3 hakkın bulunmakta. Haydi, oyuna başlamaya hazırsın.');
+  ShowMessage('Welcome to the Word Game. You must start the game by pressing the "START" button. The word you will find in the game is 5 letters. You have 3 rights. Come on, you are ready to start the game');
   MyForm := TCLForm.Create(Self);
   chance := 0;
   getTitle;
