@@ -9,7 +9,7 @@ var
   wordEdtBtnLyt :TclProPanel;
   ztHintBtn :TclImage;
   ztLayout,ztStartBtnLayout,gameContentLyt,EdtBtnLyt:TclLayout;
-  ztStartBtn:TclImage;
+  ztStartBtn,OkBtn:TclImage;
   AnswStr:String;
   wrongCount:integer;
   Lblword:TcLProLabel;
@@ -36,65 +36,66 @@ var
     AnswStr := AnsiUpperCase(AnswStr);
     If AnswStr=MyWord Then
     begin
-      ShowMessage('Congratulations..🤗');
+      ShowMessage('Tebrikler🤗');
       chance := 0;
       control := false;
-      ztStartBtn.Tag := 0;
-      MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
+      ztStartBtn.Visible:=True;
+      OkBtn.Visible:=False;
       //ztStartLbl.Text := ' ';
       kelimeEdt.Text :='';
         LblDisplay.Visible := False;
         WordMemo.Text := '';
+        WordMemo.Enabled:=False;
+        kelimeEdt.Enabled:=False;
     end;
     else
     begin
       if wrongCount = 3 then
       begin
-        ShowMessage('Word : '+MyWord+' You failed game restarted.🙁');
+        ShowMessage('Kelime: '+MyWord+' Başarısız oldun yeniden başlatıldı.🙁');
         chance := 0;
         control := false;
-        MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
-        ztStartBtn.Tag := 0;
+        ztStartBtn.Visible:=True;
+        OkBtn.Visible:=False;
+        //ztStartLbl.Text := ' ';
         wrongCount := 1;
         GetNewWord;
        
         kelimeEdt.Text := '';
         WordMemo.Text := '';
         LblDisplay.Visible := False;
+        WordMemo.Enabled:=False;
+        kelimeEdt.Enabled:=False;
       end
+      
+      else  if kelimeEdt.Text = '' then
+      begin
+      ShowMessage('Lütfen Kutucuğu doldurunuz');
+      end;
+      
       else
       begin
         wrongCount := wrongCount +1;
-        ShowMessage('Incorrect Try Again🙁 Your Remaining Right '+IntToStr(wrongCount-1)+'/3');
+        ShowMessage('Yanlış Tekrar Deneyin.🙁  Kalan Hakkın  '+IntToStr(wrongCount-1)+'/3');
         kelimeEdt.Text := '';
       end;
     end;
   end;
+  
   Procedure BtnStartGameClick;
   begin
-    case ztStartBtn.Tag of
-      0:
-      begin
-        MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/ok.png');
-        ztStartBtn.Tag := 1; 
-        wrongCount := 1;
-        GetNewWord;
-        WordMemo.Text := WordMean;
-        kelimeEdt.Text :='';
-        LblDisplay.Visible := False;
-      end;
-      1:
-      begin
-        CheckGameOnClick;
-      end;
-    end;
+    WordMemo.Enabled:=True;
+    kelimeEdt.Enabled:=True;
+    ztStartBtn.Visible:=False;
+    OkBtn.Visible:=True;
+  
+    wrongCount := 1;
+    GetNewWord;
+    WordMemo.Text := WordMean;
+    kelimeEdt.Text :='';
+    LblDisplay.Visible := False;
   End;
 
-  Procedure GetWordEnter;
-  begin
-
-  end;
-  
   Procedure SetupStartBtn;
   begin
     ztLayout := MyForm.AddNewLayout(MyForm,'ztLayout');
@@ -113,11 +114,15 @@ var
     ztStartBtn.Align := alTop;
     ztStartBtn.Height := 100;
     ztStartBtn.Width := 100;
-    ztStartBtn.Tag := 0;
     
     MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
     
     MyForm.AddNewEvent(ztStartBtn,tbeOnClick,'BtnStartGameClick');
+    
+    OkBtn := MyForm.AddNewProImage(EdtBtnLyt,'OkBtn');
+    clComponent.SetupComponent(OkBtn,'{"Align" : "Left","Width":100,"Height":100,"ImgUrl":"https://clomosy.com/educa/ok.png", "ImgFit":"yes"}');
+    OkBtn.Visible:=False;
+    MyForm.AddNewEvent(OkBtn,tbeOnClick,'CheckGameOnClick');
     
   end;
   
@@ -140,7 +145,7 @@ var
             begin
               chance := chance +1;
               
-             
+              // RASTGELE 2 DEĞERİ ALIYOR
                 for i := 1 to 5 do
                 begin
                     firstIndex := clMath.GenerateRandom(1,5);
@@ -149,13 +154,13 @@ var
                       break;
                 end;
                 
-          
+                // HARFLER ALINDI
               firstLetter := Copy(MyWord,firstIndex,1); //L
               secondLetter := Copy(MyWord,secondIndex,1); //U
               LblDisplay.Visible := True;
               LblDisplay.Text := ''; //?
               
-              
+              // HARFLER LABELA YAZILDI
                   for i:= 1 to 5 do
                   begin
                       if i = firstIndex then
@@ -169,12 +174,12 @@ var
             end;
       end
       else
-        ShowMessage('You Have No More Rights 😞');
+        ShowMessage('Başka Hakkınız Kalmadı 😞');
       
     
       end
       else
-        ShowMessage('Start Game! 😎');
+        ShowMessage('Oyunu Başlat! 😎');
       
   
     end;
@@ -197,11 +202,12 @@ var
     WordMemo.Margins.Top:=10;
     WordMemo.ReadOnly := True;
     WordMemo.TextSettings.WordWrap := True;
+    WordMemo.Enabled:=False;
    end;
   
 procedure getTitle;
 begin
-  Lblword := MyForm.AddNewProLabel(MyForm,'Lblword','World Game');
+  Lblword := MyForm.AddNewProLabel(MyForm,'Lblword','KELİME OYUNU');
   clComponent.SetupComponent(Lblword,'{"Align" : "MostTop","MarginBottom":35,"Width" :210, "Height":26,"TextColor":"#F2F0F0","TextSize":20,"TextVerticalAlign":"top", "TextHorizontalAlign":"center","TextBold":"yes"}');
   
 end;
@@ -231,7 +237,7 @@ begin
     kelimeEdt := MyForm.AddNewEdit(WordEdtPanel,'kelimeEdt','_____________');
     kelimeEdt.Align := alClient;
     kelimeEdt.MaxLength := 5;
-
+    kelimeEdt.Enabled:=False;
     
     ztHintBtn:= MyForm.AddNewImage(EdtBtnLyt,'ztHintBtn');
     ztHintBtn.Align := alRight;
@@ -267,7 +273,7 @@ end;
 
 
 begin
-  ShowMessage('Welcome to the Word Game. You must start the game by pressing the "START" button. The word you will find in the game is 5 letters. You have 3 rights. Come on, you are ready to start the game');
+  ShowMessage('Kelime Oyununa hoşgeldin. Oyuna "START" butonuna basarak başlamalısın. Oyundaki bulacağın kelime 5 harfli. 3 hakkın bulunmakta. Haydi, oyuna başlamaya hazırsın.');
   MyForm := TCLForm.Create(Self);
   chance := 0;
   getTitle;
