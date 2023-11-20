@@ -20,7 +20,7 @@ var
   Procedure GetNewWord;
   begin
     myGameEngine:= TclGameEngine.Create;
-    MyWord := MyGameEngine.WordService('GETWORD:5','');
+    MyWord := MyGameEngine.WordService('GETWORD:5','forkids');
     With Clomosy.ClDataSetFromJSON(MyWord) Do 
     Begin
       MyWord := FieldByName('Word').AsString;

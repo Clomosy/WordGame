@@ -9,7 +9,7 @@ var
   wordEdtBtnLyt :TclProPanel;
   ztHintBtn :TclImage;
   ztLayout,ztStartBtnLayout,gameContentLyt,EdtBtnLyt:TclLayout;
-  ztStartBtn:TclImage;
+  ztStartBtn,OkBtn:TclImage;
   AnswStr:String;
   wrongCount:integer;
   Lblword:TcLProLabel;
@@ -20,8 +20,8 @@ var
   void GetNewWord;
   {
     myGameEngine= TclGameEngine.Create;
-    MyWord = MyGameEngine.WordService('GETWORD:5','');
-    with Clomosy.ClDataSetFromJSON(MyWord)  do
+    MyWord = MyGameEngine.WordService('GETWORD:5','forkids');
+    With Clomosy.ClDataSetFromJSON(MyWord) Do 
     {
       MyWord = FieldByName('Word').AsString;
       MyWord = AnsiUpperCase(MyWord);
@@ -34,34 +34,45 @@ var
   {
     AnswStr = kelimeEdt.Text;
     AnswStr = AnsiUpperCase(AnswStr);
-    if (AnswStr==MyWord )
+    if (AnswStr==MyWord)
     {
       ShowMessage('Tebrikler🤗');
       chance = 0;
       control = false;
-      ztStartBtn.Tag = 0;
-      MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
+      ztStartBtn.Visible=True;
+      OkBtn.Visible=False;
       //ztStartLbl.Text = ' ';
       kelimeEdt.Text ='';
         LblDisplay.Visible = False;
         WordMemo.Text = '';
+        WordMemo.Enabled=False;
+        kelimeEdt.Enabled=False;
     }
     else
     {
-      if (wrongCount == 3 )
+      if (wrongCount == 3)
       {
         ShowMessage('Kelime: '+MyWord+' Başarısız oldun yeniden başlatıldı.🙁');
         chance = 0;
         control = false;
-        MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
+        ztStartBtn.Visible=True;
+        OkBtn.Visible=False;
         //ztStartLbl.Text = ' ';
-        ztStartBtn.Tag = 0;
         wrongCount = 1;
         GetNewWord;
+       
         kelimeEdt.Text = '';
         WordMemo.Text = '';
         LblDisplay.Visible = False;
+        WordMemo.Enabled=False;
+        kelimeEdt.Enabled=False;
       }
+      
+      else  if (kelimeEdt.Text == '')
+      {
+      ShowMessage('Lütfen Kutucuğu doldurunuz');
+      }
+      
       else
       {
         wrongCount = wrongCount +1;
@@ -70,33 +81,21 @@ var
       }
     }
   }
+  
   void BtnStartGameClick;
   {
-    case ztStartBtn.Tag of
-    {
-      0:
-      {
-        MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/ok.png');
-        //ztStartLbl.Text = ' ';
-        ztStartBtn.Tag = 1; //buton içerisinde veri saklama işlemi yapılabilir. 
-        wrongCount = 1;
-        GetNewWord;
-        WordMemo.Text = WordMean;
-        kelimeEdt.Text ='';
-        LblDisplay.Visible = False;
-      }
-      1:
-      {
-        CheckGameOnClick;
-      }
-    }
-  }
-
-  void GetWordEnter;
-  {
-
-  }
+    WordMemo.Enabled=True;
+    kelimeEdt.Enabled=True;
+    ztStartBtn.Visible=False;
+    OkBtn.Visible=True;
   
+    wrongCount = 1;
+    GetNewWord;
+    WordMemo.Text = WordMean;
+    kelimeEdt.Text ='';
+    LblDisplay.Visible = False;
+  }
+
   void SetupStartBtn;
   {
     ztLayout = MyForm.AddNewLayout(MyForm,'ztLayout');
@@ -115,13 +114,18 @@ var
     ztStartBtn.Align = alTop;
     ztStartBtn.Height = 100;
     ztStartBtn.Width = 100;
-    ztStartBtn.Tag = 0;
     
     MyForm.setImage(ztStartBtn,'https://clomosy.com/educa/start.png');
     
     MyForm.AddNewEvent(ztStartBtn,tbeOnClick,'BtnStartGameClick');
     
+    OkBtn = MyForm.AddNewProImage(EdtBtnLyt,'OkBtn');
+    clComponent.SetupComponent(OkBtn,'{"Align" : "Left","Width":100,"Height":100,"ImgUrl":"https://clomosy.com/educa/ok.png", "ImgFit":"yes"}');
+    OkBtn.Visible=False;
+    MyForm.AddNewEvent(OkBtn,tbeOnClick,'CheckGameOnClick');
+    
   }
+  
   void ztHintBtnOnClick;
   var
     hintValue : String;
@@ -130,14 +134,14 @@ var
     i : Integer;
     rasgeleSayi : Integer;
     
+  {
+      if (WordMemo.Text <> '')
     {
-      if (WordMemo.Text <> '' )
-      {
-           if (control == false )
+           if (control == false)
       {
        control = true;
        
-             if (chance < 2 )
+             if (chance < 2)
             {
               chance = chance +1;
               
@@ -149,6 +153,7 @@ var
                     if (secondIndex <> firstIndex )
                       break;
                 }
+                
                 // HARFLER ALINDI
               firstLetter = Copy(MyWord,firstIndex,1); //L
               secondLetter = Copy(MyWord,secondIndex,1); //U
@@ -156,13 +161,13 @@ var
               LblDisplay.Text = ''; //?
               
               // HARFLER LABELA YAZILDI
-                  for (i= 1 to 5 )
+                  for (i= 1 to 5)
                   {
-                      if (i == firstIndex )
+                      if (i == firstIndex)
                         LblDisplay.Text = LblDisplay.Text + firstLetter
-                      else if (i == secondIndex ) 
+                      else if (i == secondIndex) 
                         LblDisplay.Text = LblDisplay.Text + secondLetter
-                        
+          
                       else
                         LblDisplay.Text = LblDisplay.Text + ' - ';
                   }
@@ -172,11 +177,14 @@ var
         ShowMessage('Başka Hakkınız Kalmadı 😞');
       
     
-      }
+    }
       else
         ShowMessage('Oyunu Başlat! 😎');
-    }
+      
+  
+  }
     
+  
   void GetWordMemo;
   var
    ztProPanel : TclProPanel;
@@ -194,6 +202,7 @@ var
     WordMemo.Margins.Top=10;
     WordMemo.ReadOnly = True;
     WordMemo.TextSettings.WordWrap = True;
+    WordMemo.Enabled=False;
    }
   
 void getTitle;
@@ -228,7 +237,7 @@ void editBtnHintContent;
     kelimeEdt = MyForm.AddNewEdit(WordEdtPanel,'kelimeEdt','_____________');
     kelimeEdt.Align = alClient;
     kelimeEdt.MaxLength = 5;
-
+    kelimeEdt.Enabled=False;
     
     ztHintBtn= MyForm.AddNewImage(EdtBtnLyt,'ztHintBtn');
     ztHintBtn.Align = alRight;
