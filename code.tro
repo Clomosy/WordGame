@@ -1,6 +1,7 @@
 var 
   MyForm:TCLForm;
-  LblDisplay,ztStartLbl:TclLabel;
+  ztStartLbl:TclLabel;
+  LblDisplay : TcLProLabel;
   myGameEngine:TclGameEngine;
   MyWord, WordMean:String;
   WordEdtPanel:TclPanel;
@@ -222,7 +223,7 @@ void editBtnHintContent;
   EdtBtnLyt = MyForm.AddNewLayout(wordEdtBtnLyt,'EdtBtnLyt');
   EdtBtnLyt.Align = alTop;
   EdtBtnLyt.Margins.Top= 10;
-  EdtBtnLyt.Height = 100;
+  EdtBtnLyt.Height = 80;
   
   
 
@@ -248,12 +249,8 @@ void editBtnHintContent;
     MyForm.AddNewEvent(ztHintBtn,tbeOnClick,'ztHintBtnOnClick');
     
     //ipucu mesajı
-    LblDisplay= MyForm.AddNewLabel(wordEdtBtnLyt,'LblDisplay',' ');
-    LblDisplay.Align = alRight;
-    LblDisplay.Visible = True;
-    EdtBtnLyt.Height = 80;
-    LblDisplay.Margins.Right= 20;
-    LblDisplay.Margins.Bottom= 10;
+    LblDisplay= MyForm.AddNewProLabel(wordEdtBtnLyt,'LblDisplay',' ');
+    clComponent.SetupComponent(LblDisplay,'{"Align" : "Right","MarginBottom":10,"MarginRight":20,"TextColor":"#9400D3"}');
   
 }
 
@@ -283,5 +280,8 @@ void getGameContent
   
   SetupStartBtn;
 
+  if(Clomosy.PlatformIsMobile) 
   MyForm.Run;
+  else
+  MyForm.RunModal;
 }

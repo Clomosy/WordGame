@@ -1,6 +1,7 @@
 var 
   MyForm:TCLForm;
-  LblDisplay,ztStartLbl:TclLabel;
+  ztStartLbl:TclLabel;
+  LblDisplay : TcLProLabel;
   myGameEngine:TclGameEngine;
   MyWord, WordMean:String;
   WordEdtPanel:TclPanel;
@@ -17,24 +18,24 @@ var
   chance : Integer;
   
   
-  Procedure GetNewWord;
+  procedure GetNewWord;
   begin
-    myGameEngine:= TclGameEngine.Create;
+    myGameEngine := TclGameEngine.Create;
     MyWord := MyGameEngine.WordService('GETWORD:5','forkids');
     With Clomosy.ClDataSetFromJSON(MyWord) Do 
-    Begin
+    begin
       MyWord := FieldByName('Word').AsString;
       MyWord := AnsiUpperCase(MyWord);
       LblDisplay.Text := MyWord;//UpperCase
       WordMean := FieldByName('MeanText').AsString; 
-    End;
-  End;
+    end;
+  end;
   
-  Procedure CheckGameOnClick;
+  procedure CheckGameOnClick;
   begin
     AnswStr := kelimeEdt.Text;
     AnswStr := AnsiUpperCase(AnswStr);
-    If AnswStr=MyWord Then
+    if AnswStr = MyWord then
     begin
       ShowMessage('Tebrikler🤗');
       chance := 0;
@@ -66,7 +67,7 @@ var
         LblDisplay.Visible := False;
         WordMemo.Enabled:=False;
         kelimeEdt.Enabled:=False;
-      end
+      end;
       
       else  if kelimeEdt.Text = '' then
       begin
@@ -82,7 +83,7 @@ var
     end;
   end;
   
-  Procedure BtnStartGameClick;
+  procedure BtnStartGameClick;
   begin
     WordMemo.Enabled:=True;
     kelimeEdt.Enabled:=True;
@@ -94,9 +95,9 @@ var
     WordMemo.Text := WordMean;
     kelimeEdt.Text :='';
     LblDisplay.Visible := False;
-  End;
+  end;
 
-  Procedure SetupStartBtn;
+  procedure SetupStartBtn;
   begin
     ztLayout := MyForm.AddNewLayout(MyForm,'ztLayout');
     ztLayout.Align:=alBottom;
@@ -126,7 +127,7 @@ var
     
   end;
   
-  Procedure ztHintBtnOnClick;
+  procedure ztHintBtnOnClick;
   var
     hintValue : String;
     firstLetter,secondLetter : String;
@@ -134,9 +135,9 @@ var
     i : Integer;
     rasgeleSayi : Integer;
     
-    begin
+  begin
       if WordMemo.Text <> '' then
-      begin
+    begin
            if control = false then
       begin
        control := true;
@@ -161,31 +162,31 @@ var
               LblDisplay.Text := ''; //?
               
               // HARFLER LABELA YAZILDI
-                  for i:= 1 to 5 do
+                  for i := 1 to 5 do
                   begin
                       if i = firstIndex then
                         LblDisplay.Text := LblDisplay.Text + firstLetter
-                      else if i = secondIndex then 
+                      else if i = secondIndex then
                         LblDisplay.Text := LblDisplay.Text + secondLetter
-                        
+          
                       else
                         LblDisplay.Text := LblDisplay.Text + ' - ';
                   end;
             end;
-      end
+      end;
       else
         ShowMessage('Başka Hakkınız Kalmadı 😞');
       
     
-      end
+    end;
       else
         ShowMessage('Oyunu Başlat! 😎');
       
   
-    end;
+  end;
     
   
-  Procedure GetWordMemo;
+  procedure GetWordMemo;
   var
    ztProPanel : TclProPanel;
    begin
@@ -222,7 +223,7 @@ begin
   EdtBtnLyt := MyForm.AddNewLayout(wordEdtBtnLyt,'EdtBtnLyt');
   EdtBtnLyt.Align := alTop;
   EdtBtnLyt.Margins.Top:= 10;
-  EdtBtnLyt.Height := 100;
+  EdtBtnLyt.Height := 80;
   
   
 
@@ -248,12 +249,9 @@ begin
     MyForm.AddNewEvent(ztHintBtn,tbeOnClick,'ztHintBtnOnClick');
     
     //ipucu mesajı
-    LblDisplay:= MyForm.AddNewLabel(wordEdtBtnLyt,'LblDisplay',' ');
-    LblDisplay.Align := alRight;
-    LblDisplay.Visible := True;
-    EdtBtnLyt.Height := 80;
-    LblDisplay.Margins.Right:= 20;
-    LblDisplay.Margins.Bottom:= 10;
+    LblDisplay:= MyForm.AddNewProLabel(wordEdtBtnLyt,'LblDisplay',' ');
+    clComponent.SetupComponent(LblDisplay,'{"Align" : "Right","MarginBottom":10,"MarginRight":20,"TextColor":"#9400D3"}');
+    
   
 end;
 
@@ -283,5 +281,8 @@ begin
   
   SetupStartBtn;
 
+  if Clomosy.PlatformIsMobile then
   MyForm.Run;
-End;
+  else
+  MyForm.RunModal;
+end;
