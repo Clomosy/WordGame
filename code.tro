@@ -227,7 +227,7 @@ void editBtnHintContent;
   
   
 
-    WordEdtPanel= MyForm.AddNewPanel(EdtBtnLyt,'WordEdtPanel','');
+    WordEdtPanel= MyForm.AddNewPanel(EdtBtnLyt,'WordEdtPanel');
     WordEdtPanel.Align = alLeft;
     WordEdtPanel.Height = 10;
     WordEdtPanel.Width = 100;
